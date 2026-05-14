@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Enchanted Forest</title>
+
+  <!-- Google Fonts: Cinzel for the title (fancy), Lora for body (readable serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ── Global reset & page background ────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background-color: #1a0a00;          /* very dark brown outside the page */
+      background-image:
+        radial-gradient(ellipse at top,    #2d1200 0%, #1a0a00 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px 12px 48px;
+      font-family: 'Lora', Georgia, serif;
+    }
+
+    /* ── The "parchment" card ───────────────────────────────────── */
+    #card {
+      background: #fdf6e3;               /* warm parchment colour */
+      background-image:
+        /* subtle noise texture using a repeating gradient trick */
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 43, 0.03) 2px,
+          rgba(139, 90, 43, 0.03) 4px
+        );
+      border: 6px double #8b5a2b;        /* double border = old book feel */
+      border-radius: 12px;
+      max-width: 640px;
+      width: 100%;
+      padding: 40px 36px 32px;
+      box-shadow:
+        0 0 0 2px #5a3010,
+        0 8px 40px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    /* ── Decorative corner flourishes (pure CSS, no images) ─────── */
+    #card::before, #card::after {
+      content: "✦";
+      position: absolute;
+      font-size: 1.4rem;
+      color: #8b5a2b;
+      opacity: 0.5;
+    }
+    #card::before { top: 10px;  left: 14px; }
+    #card::after  { top: 10px; right: 14px; }
+
+    /* ── Page title ─────────────────────────────────────────────── */
+    #title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.7rem;
+      text-align: center;
+      color: #5a3010;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    #subtitle {
+      text-align: center;
+      font-style: italic;
+      color: #9b7040;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* ── Illustration area (big emoji) ──────────────────────────── */
+    #illustration {
+      font-size: 3.2rem;
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      min-height: 60px;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── Story text ─────────────────────────────────────────────── */
+    #story-text {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: #3b2000;
+      text-align: justify;
+      margin-bottom: 28px;
+      min-height: 80px;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── Choices container ──────────────────────────────────────── */
+    #choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Each choice button */
+    .choice-btn {
+      background: linear-gradient(135deg, #7a4010, #5a2800);
+      color: #fdf0d5;
+      border: 2px solid #c8862a;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    .choice-btn:hover {
+      background: linear-gradient(135deg, #9a5518, #7a3a08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    }
+
+    .choice-btn:active { transform: translateY(0); }
+
+    /* ── Ending badge (shown when a node has no choices) ────────── */
+    #ending-badge {
+      text-align: center;
+      background: linear-gradient(135deg, #fff4c2, #ffe082);
+      border: 2px solid #c8862a;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #5a3010;
+      display: none;            /* hidden until we reach an ending */
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(200,134,42,0.25);
+    }
+
+    /* ── Back & Restart buttons ─────────────────────────────────── */
+    #nav-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: transparent;
+      color: #8b5a2b;
+      border: 2px solid #8b5a2b;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #8b5a2b;
+      color: #fdf6e3;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* ── Divider ────────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(139, 90, 43, 0.3);
+      margin: 28px 0 20px;
+    }
+
+    /* ── Endings collector ──────────────────────────────────────── */
+    #endings-section h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: #5a3010;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    #endings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* One row per possible ending */
+    .ending-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #9b7040;
+    }
+
+    /* The little lock/star icon */
+    .ending-icon {
+      font-size: 1.2rem;
+      width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* Discovered endings are highlighted */
+    .ending-row.found {
+      color: #3b2000;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ────────────────────────────────────────────────────────────
+       THE PARCHMENT CARD
+       Everything the reader sees lives inside this one <div>.
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="card">
+
+    <h1 id="title">✦ The Enchanted Forest ✦</h1>
+    <p  id="subtitle">A magical choose-your-own-adventure story</p>
+
+    <!-- Illustration (big emoji, one line per scene) -->
+    <div id="illustration">🌲🌟🌲</div>
+
+    <!-- The story paragraph for the current scene -->
+    <p id="story-text"></p>
+
+    <!-- When an ending is reached, this badge appears -->
+    <div id="ending-badge"></div>
+
+    <!-- The choice buttons are inserted here by JavaScript -->
+    <div id="choices"></div>
+
+    <!-- Back and Restart buttons -->
+    <div id="nav-buttons">
+      <button class="nav-btn" id="back-btn"    onclick="goBack()">◀ Go back</button>
+      <button class="nav-btn" id="restart-btn" onclick="goTo('start')">↺ Start again</button>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Endings collector at the bottom of the card -->
+    <div id="endings-section">
+      <h3>🏆 Endings Found</h3>
+      <div id="endings-list"></div>
+    </div>
+
+  </div><!-- end #card -->
+
+
+  <script>
+    // ==============================================================
+    //  STORY DATA
+    //
+    //  This is the heart of the whole program.
+    //  Think of it like a Python dictionary of dictionaries.
+    //
+    //  Each key (e.g. "start", "fox_path") is a "node" — one screen
+    //  of story. Each node has:
+    //
+    //    emoji   : the illustration shown at the top
+    //    text    : the story paragraph
+    //    choices : an array (like a Python list) of objects.
+    //              Each choice has:
+    //                label  – the button text the reader clicks
+    //                next   – the key of the node to jump to
+    //    ending  : (optional) if this node is a final ending,
+    //              this string names it for the collector
+    //
+    //  An empty choices array [ ] means it is a dead-end / ending.
+    // ==============================================================
+    const story = {
+
+      start: {
+        emoji: "🌲🌟🌲",
+        text:  "One sunny morning, you skip into the Enchanted Forest. "
+             + "The trees sparkle with golden light and butterflies dance around you. "
+             + "Suddenly, a little red fox trots out from behind a bush — and winks at you!",
+        choices: [
+          { label: "Follow the friendly fox 🦊",       next: "fox_path"    },
+          { label: "Keep walking on your own path 👣", next: "dragon_path" }
+        ]
+      },
+
+      // ── Branch 1: following the fox ──────────────────────────────
+      fox_path: {
+        emoji: "🦊💧🪨",
+        text:  "The fox leads you to a wide, sparkling river. "
+             + "Smooth stepping stones hop across to the other side. "
+             + "Just downstream, you spot a tiny wooden boat tied to a willow tree.",
+        choices: [
+          { label: "Hop across the stepping stones 🪨", next: "river_cross" },
+          { label: "Take the little boat ⛵",            next: "river_boat"  }
+        ]
+      },
+
+      river_cross: {
+        emoji: "🏰👑🌸",
+        text:  "Hop, hop, hop — you cross without getting your feet wet! "
+             + "On the other side stands a gleaming castle with pink flags. "
+             + "A friendly princess flings open the gate. "
+             + "\"Welcome, brave traveller!\" she laughs. "
+             + "She places a crown of flowers on your head, "
+             + "and you both dance in the courtyard all afternoon. "
+             + "What a wonderful day!",
+        choices: [],
+        ending: "👑 The Flower Crown Ending"
+      },
+
+      river_boat: {
+        emoji: "⛵🌊🦆",
+        text:  "You untie the little boat and drift gently downstream. "
+             + "Silver fish leap beside you and a family of ducks paddles along, quacking happily. "
+             + "The river carries you all the way home, right to your back garden! "
+             + "You wave goodbye to the ducks. Best boat ride ever!",
+        choices: [],
+        ending: "⛵ The River Adventure Ending"
+      },
+
+      // ── Branch 2: keeping to your own path ───────────────────────
+      dragon_path: {
+        emoji: "🌿🐉💤",
+        text:  "You follow a mossy path deeper into the forest. "
+             + "Behind a big oak tree, a small purple dragon is fast asleep, "
+             + "snoring tiny puffs of pink smoke. It looks rather cosy.",
+        choices: [
+          { label: "Gently wake it up 🐉",      next: "dragon_wake"  },
+          { label: "Tiptoe past quietly 🤫",    next: "dragon_sneak" }
+        ]
+      },
+
+      dragon_wake: {
+        emoji: "🐉❤️🌤️",
+        text:  "The dragon opens one big golden eye — then smiles the widest smile you've ever seen! "
+             + "\"Oh hooray, a friend!\" it rumbles in a rumbly voice. "
+             + "It scoops you gently onto its back and flaps up above the treetops. "
+             + "You can see your whole village from up there! "
+             + "The dragon drops you safely in your garden and blows a cheerful smoke ring goodbye.",
+        choices: [],
+        ending: "🐉 The Dragon Flight Ending"
+      },
+
+      dragon_sneak: {
+        emoji: "🏡🍬✨",
+        text:  "Tiptoe, tiptoe — past the dragon without a sound! "
+             + "A little further on you find a cosy cottage "
+             + "with a candy-cane door and a star-shaped window. "
+             + "A kind old witch with a pointy hat peers out and waves.",
+        choices: [
+          { label: "Knock on the door 🍫",              next: "witch_door"  },
+          { label: "Wave and walk on towards home 🌻",  next: "fairy_path"  }
+        ]
+      },
+
+      witch_door: {
+        emoji: "🍫☕🌙",
+        text:  "The cottage smells of cinnamon and melted chocolate! "
+             + "The witch gives you the most delicious hot cocoa you have ever tasted, "
+             + "and a big bag of star-shaped biscuits to take home for your family. "
+             + "That night, everyone has biscuits for pudding. Delicious!",
+        choices: [],
+        ending: "🍫 The Magic Cocoa Ending"
+      },
+
+      fairy_path: {
+        emoji: "🧚‍♀️🌈🌼",
+        text:  "You walk on through the trees. "
+             + "Just as the path starts to look confusing, "
+             + "a tiny glowing fairy zips around your head and giggles. "
+             + "\"Lost? I know every path in this forest!\" "
+             + "She leads you home along a trail scattered with rainbow flower petals. "
+             + "At your front door she does a tiny spin and disappears in a shower of golden sparkles.",
+        choices: [],
+        ending: "🌈 The Rainbow Fairy Ending"
+      }
+
+    }; // ← end of story data
+
+
+    // ==============================================================
+    //  PROGRAM STATE
+    //
+    //  history  : an array (list) of node keys we've visited,
+    //             used to power the Back button.
+    //             e.g. ["start", "fox_path", "river_cross"]
+    //
+    //  foundEndings : a JavaScript Set (like a Python set)
+    //                 that remembers which endings we've reached.
+    // ==============================================================
+    let history      = [];
+    let foundEndings = new Set();
+
+
+    // ==============================================================
+    //  RENDER FUNCTION
+    //
+    //  goTo(nodeKey) is the main function.
+    //  It looks up the node in the story object,
+    //  then updates the page to show that scene.
+    // ==============================================================
+    function goTo(nodeKey) {
+
+      // 1. Look up the node (like dict[key] in Python)
+      const node = story[nodeKey];
+
+      // 2. Push this key onto the history stack
+      history.push(nodeKey);
+
+      // 3. Grab references to the HTML elements we want to update
+      const illustrationEl = document.getElementById('illustration');
+      const textEl         = document.getElementById('story-text');
+      const choicesEl      = document.getElementById('choices');
+      const badgeEl        = document.getElementById('ending-badge');
+      const backBtn        = document.getElementById('back-btn');
+
+      // 4. Quick fade-out → update → fade-in for a smoother feel
+      illustrationEl.style.opacity = '0';
+      textEl.style.opacity         = '0';
+
+      setTimeout(function() {
+
+        // ── Update illustration and text ──────────────────────────
+        illustrationEl.textContent = node.emoji;
+        textEl.textContent         = node.text;
+
+        // ── Build choice buttons ──────────────────────────────────
+        // First clear any old buttons
+        choicesEl.innerHTML = '';
+
+        if (node.choices.length > 0) {
+          // This node has choices: create a button for each one
+          // (similar to: for choice in node["choices"]: ... in Python)
+          node.choices.forEach(function(choice) {
+            const btn = document.createElement('button');
+            btn.className   = 'choice-btn';
+            btn.textContent = choice.label;
+
+            // When clicked, go to the next node
+            // We use a closure here to "capture" the value of choice.next
+            btn.onclick = function() { goTo(choice.next); };
+
+            choicesEl.appendChild(btn);
+          });
+          badgeEl.style.display = 'none';
+
+        } else {
+          // No choices = this is an ending!
+          badgeEl.textContent   = '🎉 THE END — ' + node.ending;
+          badgeEl.style.display = 'block';
+
+          // Add to the found-endings Set (duplicates are ignored automatically)
+          foundEndings.add(nodeKey);
+          updateEndingsCollector();
+        }
+
+        // ── Enable / disable the Back button ─────────────────────
+        // history.length > 1 means there IS somewhere to go back to
+        backBtn.disabled = (history.length <= 1);
+
+        // ── Fade back in ──────────────────────────────────────────
+        illustrationEl.style.transition = 'opacity 0.35s';
+        textEl.style.transition         = 'opacity 0.35s';
+        illustrationEl.style.opacity    = '1';
+        textEl.style.opacity            = '1';
+
+      }, 200); // wait 200ms for the fade-out before swapping content
+    }
+
+
+    // ==============================================================
+    //  BACK FUNCTION
+    //
+    //  Pops the last key off the history stack and goes there.
+    //  We pop twice: once for the current page, once to get the
+    //  previous key (then goTo will push it back on).
+    // ==============================================================
+    function goBack() {
+      if (history.length <= 1) return;   // already at the start
+      history.pop();                     // remove current node
+      const previousKey = history.pop(); // take the one before it
+      goTo(previousKey);                 // go there (it gets re-pushed)
+    }
+
+
+    // ==============================================================
+    //  ENDINGS COLLECTOR
+    //
+    //  Builds the list of all possible endings at the bottom,
+    //  showing a lock 🔒 for undiscovered ones and the real name
+    //  with a star ⭐ once found.
+    // ==============================================================
+    function updateEndingsCollector() {
+      const listEl = document.getElementById('endings-list');
+      listEl.innerHTML = '';   // clear and rebuild
+
+      // Loop over every node in the story object
+      // Object.entries() gives us [key, value] pairs, like dict.items()
+      Object.entries(story).forEach(function([key, node]) {
+
+        // Skip nodes that aren't endings
+        if (!node.ending) return;
+
+        const isFound = foundEndings.has(key);
+
+        const row = document.createElement('div');
+        row.className = 'ending-row' + (isFound ? ' found' : '');
+
+        const icon = document.createElement('span');
+        icon.className   = 'ending-icon';
+        icon.textContent = isFound ? '⭐' : '🔒';
+
+        const label = document.createElement('span');
+        label.textContent = isFound ? node.ending : '??? Ending — not found yet';
+
+        row.appendChild(icon);
+        row.appendChild(label);
+        listEl.appendChild(row);
+      });
+    }
+
+
+    // ==============================================================
+    //  STARTUP
+    //
+    //  When the page loads, build the endings list and go to "start".
+    // ==============================================================
+    updateEndingsCollector();
+    goTo('start');
+
+  </script>
+</body>
+</html>
