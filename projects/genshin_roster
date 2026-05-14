@@ -1,0 +1,3099 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genshin Roster</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Crimson+Pro:ital,wght@0,300;0,400;1,300&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0e1628;
+    --surface:   #162040;
+    --border:    #2a4070;
+    --gold:      #f5d06a;
+    --gold-dim:  #b8922a;
+    --silver:    #a8c4e8;
+    --white:     #e8f0ff;
+    --danger:    #e05060;
+    --edit-bg:   #1a2a50;
+    --input-bg:  #0b1020;
+    --teal:      #4de8d8;
+    --teal-dim:  #1a9e94;
+    --anemo:     #74e8c8;
+    --geo:       #f5d06a;
+    --electro:   #b490f0;
+    --dendro:    #90d858;
+    --hydro:     #58b8f8;
+    --pyro:      #f88050;
+    --cryo:      #a8e0f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    min-height: 100vh;
+  }
+
+  /* ── Background texture ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 10% 10%, rgba(77,232,216,.10) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 70% at 90% 90%, rgba(88,184,248,.12) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245,208,106,.05) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  main { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* ── Header ── */
+  header { text-align: center; margin-bottom: 40px; }
+  .title-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--teal-dim);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: .05em;
+    line-height: 1.1;
+  }
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    margin: 16px auto 0; max-width: 340px;
+  }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--teal-dim), transparent); }
+  .divider-gem { width: 7px; height: 7px; background: var(--teal); transform: rotate(45deg); box-shadow: 0 0 8px var(--teal); }
+
+  /* ── Controls bar ── */
+  .controls {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .char-count { color: var(--silver); font-style: italic; font-size: 15px; }
+
+  .btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border: none; cursor: pointer;
+    padding: 8px 18px; border-radius: 3px;
+    transition: all .18s;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+  }
+  .btn-ghost:hover { background: rgba(77,232,216,.12); border-color: var(--teal); }
+  .btn-primary {
+    background: linear-gradient(135deg, #f5d06a, #e8a830);
+    color: #0e1628;
+    font-weight: 700;
+    box-shadow: 0 0 14px rgba(245,208,106,.35);
+  }
+  .btn-primary:hover { background: linear-gradient(135deg, #fde090, #f5b840); box-shadow: 0 0 20px rgba(245,208,106,.5); }
+  .btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+  .btn-danger:hover { background: rgba(192,80,90,.15); }
+
+  #edit-banner {
+    display: none;
+    background: rgba(77,232,216,.08);
+    border: 1px solid var(--teal-dim);
+    border-radius: 4px;
+    padding: 10px 18px;
+    margin-bottom: 20px;
+    font-style: italic;
+    color: var(--teal);
+    font-size: 14px;
+    text-align: center;
+  }
+  #edit-banner.visible { display: block; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+
+  thead th {
+    font-family: 'Cinzel', serif;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--teal-dim);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+  }
+  thead th.center { text-align: center; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(42,47,62,.6);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: rgba(77,232,216,.06); }
+
+  td {
+    padding: 11px 14px;
+    vertical-align: middle;
+    color: var(--white);
+  }
+  td.center { text-align: center; }
+
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: .04em;
+  }
+
+  .level-val { color: var(--silver); }
+  .level-val strong { color: var(--white); font-weight: 400; }
+
+  .const-badge {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    width: 28px; height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    background: rgba(77,232,216,.10);
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+  }
+  .const-badge.c6 { background: rgba(245,208,106,.25); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(245,208,106,.4); }
+
+  .talents { display: flex; gap: 6px; justify-content: center; }
+  .t-pip {
+    width: 26px; height: 22px;
+    background: rgba(77,232,216,.06);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--silver);
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+  }
+  .t-pip.maxed {
+    background: rgba(245,208,106,.20);
+    border-color: var(--gold-dim);
+    color: var(--gold);
+    box-shadow: 0 0 6px rgba(245,208,106,.3);
+  }
+
+  /* ── Edit-mode inputs ── */
+  .edit-only { display: none; }
+  body.editing .edit-only { display: block; }
+  body.editing .read-only { display: none; }
+  body.editing tbody tr:hover { background: rgba(77,232,216,.08); }
+
+  input[type=text], input[type=number] {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--white);
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    padding: 4px 8px;
+    transition: border-color .15s;
+    outline: none;
+    width: 100%;
+  }
+  input[type=text]:focus, input[type=number]:focus {
+    border-color: var(--teal-dim);
+    background: #141824;
+  }
+  input[type=number] { text-align: center; }
+  .name-input { max-width: 160px; font-family: 'Cinzel', serif; font-size: 13px; }
+  .num-input  { max-width: 52px; }
+
+  .del-btn {
+    background: transparent; border: none;
+    color: var(--border); cursor: pointer;
+    font-size: 18px; line-height: 1;
+    padding: 2px 6px; border-radius: 3px;
+    transition: color .15s;
+  }
+  .del-btn:hover { color: var(--danger); }
+
+  /* ── Add row ── */
+  #add-row { display: none; }
+  body.editing #add-row { display: table-row; }
+  #add-row td { padding: 14px 14px; background: rgba(77,232,216,.04); border-top: 1px dashed var(--teal-dim); }
+  #add-row input { border-style: dashed; }
+
+  /* ── Save bar ── */
+  #save-bar { display: none; margin-top: 28px; text-align: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  body.editing #save-bar { display: flex; }
+
+  #save-msg { font-style: italic; color: var(--silver); font-size: 14px; align-self: center; }
+
+  /* ── Footer ── */
+  footer { text-align: center; margin-top: 60px; }
+  footer p { font-size: 12px; color: rgba(154,163,184,.35); font-style: italic; letter-spacing: .06em; }
+</style>
+</head>
+<body class="editing">
+<main>
+  <header>
+    <p class="title-label">Traveler's Records</p>
+    <h1>Genshin Roster</h1>
+    <div class="divider">
+      <span class="divider-line"></span>
+      <span class="divider-gem"></span>
+      <span class="divider-line"></span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <p class="char-count" id="char-count">75 characters</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="toggle-edit-btn" onclick="toggleEdit()">✕ Exit Edit</button>
+    </div>
+  </div>
+
+  <div id="edit-banner" class="visible">
+    ✎ Edit mode active — changes are not saved until you click "Download Updated File"
+  </div>
+
+  <div class="table-wrap">
+    <table id="roster-table">
+      <thead>
+        <tr>
+          <th>Character</th>
+          <th class="center">Level</th>
+          <th class="center">Const.</th>
+          <th class="center" colspan="3">Talents (N · E · Q)</th>
+          <th class="edit-only center">Del</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"><tr data-index="0">
+      <td>
+        <span class="char-name read-only">Traveler</span>
+        <input class="edit-only name-input" type="text" value="Traveler" oninput="update(0,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(0,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(0,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(0,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(0,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(0,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(0)" title="Delete">×</button>
+      </td></tr><tr data-index="1">
+      <td>
+        <span class="char-name read-only">Keqing</span>
+        <input class="edit-only name-input" type="text" value="Keqing" oninput="update(1,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>82</strong></span>
+        <input class="edit-only num-input" type="number" value="82" min="1" max="90" oninput="update(1,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(1,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(1,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(1,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(1,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(1)" title="Delete">×</button>
+      </td></tr><tr data-index="2">
+      <td>
+        <span class="char-name read-only">Qiqi</span>
+        <input class="edit-only name-input" type="text" value="Qiqi" oninput="update(2,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(2,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C5</span>
+        <input class="edit-only num-input" type="number" value="5" min="0" max="6" oninput="update(2,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(2,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(2,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(2,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(2)" title="Delete">×</button>
+      </td></tr><tr data-index="3">
+      <td>
+        <span class="char-name read-only">Chongyun</span>
+        <input class="edit-only name-input" type="text" value="Chongyun" oninput="update(3,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(3,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C4</span>
+        <input class="edit-only num-input" type="number" value="4" min="0" max="6" oninput="update(3,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(3,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(3,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(3,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(3)" title="Delete">×</button>
+      </td></tr><tr data-index="4">
+      <td>
+        <span class="char-name read-only">Xingqiu</span>
+        <input class="edit-only name-input" type="text" value="Xingqiu" oninput="update(4,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(4,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(4,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(4,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(4,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(4,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(4)" title="Delete">×</button>
+      </td></tr><tr data-index="5">
+      <td>
+        <span class="char-name read-only">Xiangling</span>
+        <input class="edit-only name-input" type="text" value="Xiangling" oninput="update(5,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(5,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(5,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(5,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(5,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(5,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(5)" title="Delete">×</button>
+      </td></tr><tr data-index="6">
+      <td>
+        <span class="char-name read-only">Ningguang</span>
+        <input class="edit-only name-input" type="text" value="Ningguang" oninput="update(6,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(6,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C5</span>
+        <input class="edit-only num-input" type="number" value="5" min="0" max="6" oninput="update(6,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(6,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(6,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(6,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(6)" title="Delete">×</button>
+      </td></tr><tr data-index="7">
+      <td>
+        <span class="char-name read-only">Beidou</span>
+        <input class="edit-only name-input" type="text" value="Beidou" oninput="update(7,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(7,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C3</span>
+        <input class="edit-only num-input" type="number" value="3" min="0" max="6" oninput="update(7,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(7,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(7,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(7,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(7)" title="Delete">×</button>
+      </td></tr><tr data-index="8">
+      <td>
+        <span class="char-name read-only">Mona</span>
+        <input class="edit-only name-input" type="text" value="Mona" oninput="update(8,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(8,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(8,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(8,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(8,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(8,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(8)" title="Delete">×</button>
+      </td></tr><tr data-index="9">
+      <td>
+        <span class="char-name read-only">Sucrose</span>
+        <input class="edit-only name-input" type="text" value="Sucrose" oninput="update(9,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(9,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(9,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(9,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(9,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(9,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(9)" title="Delete">×</button>
+      </td></tr><tr data-index="10">
+      <td>
+        <span class="char-name read-only">Fischl</span>
+        <input class="edit-only name-input" type="text" value="Fischl" oninput="update(10,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(10,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(10,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(10,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(10,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(10,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(10)" title="Delete">×</button>
+      </td></tr><tr data-index="11">
+      <td>
+        <span class="char-name read-only">Noelle</span>
+        <input class="edit-only name-input" type="text" value="Noelle" oninput="update(11,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(11,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(11,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(11,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(11,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(11,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(11)" title="Delete">×</button>
+      </td></tr><tr data-index="12">
+      <td>
+        <span class="char-name read-only">Bennett</span>
+        <input class="edit-only name-input" type="text" value="Bennett" oninput="update(12,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(12,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(12,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(12,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(12,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(12,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(12)" title="Delete">×</button>
+      </td></tr><tr data-index="13">
+      <td>
+        <span class="char-name read-only">Venti</span>
+        <input class="edit-only name-input" type="text" value="Venti" oninput="update(13,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(13,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(13,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(13,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(13,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(13,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(13)" title="Delete">×</button>
+      </td></tr><tr data-index="14">
+      <td>
+        <span class="char-name read-only">Razor</span>
+        <input class="edit-only name-input" type="text" value="Razor" oninput="update(14,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(14,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(14,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(14,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(14,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(14,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(14)" title="Delete">×</button>
+      </td></tr><tr data-index="15">
+      <td>
+        <span class="char-name read-only">Diluc</span>
+        <input class="edit-only name-input" type="text" value="Diluc" oninput="update(15,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(15,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(15,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(15,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(15,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(15,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(15)" title="Delete">×</button>
+      </td></tr><tr data-index="16">
+      <td>
+        <span class="char-name read-only">Barbara</span>
+        <input class="edit-only name-input" type="text" value="Barbara" oninput="update(16,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(16,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(16,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(16,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(16,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(16,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(16)" title="Delete">×</button>
+      </td></tr><tr data-index="17">
+      <td>
+        <span class="char-name read-only">Kaeya</span>
+        <input class="edit-only name-input" type="text" value="Kaeya" oninput="update(17,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(17,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(17,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(17,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(17,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(17,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(17)" title="Delete">×</button>
+      </td></tr><tr data-index="18">
+      <td>
+        <span class="char-name read-only">Lisa</span>
+        <input class="edit-only name-input" type="text" value="Lisa" oninput="update(18,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(18,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C5</span>
+        <input class="edit-only num-input" type="number" value="5" min="0" max="6" oninput="update(18,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(18,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(18,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(18,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(18)" title="Delete">×</button>
+      </td></tr><tr data-index="19">
+      <td>
+        <span class="char-name read-only">Amber</span>
+        <input class="edit-only name-input" type="text" value="Amber" oninput="update(19,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(19,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(19,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(19,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(19,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(19,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(19)" title="Delete">×</button>
+      </td></tr><tr data-index="20">
+      <td>
+        <span class="char-name read-only">Jean</span>
+        <input class="edit-only name-input" type="text" value="Jean" oninput="update(20,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(20,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(20,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(20,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">7</span>
+        <input class="edit-only num-input" type="number" value="7" min="1" max="13" oninput="update(20,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(20,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(20)" title="Delete">×</button>
+      </td></tr><tr data-index="21">
+      <td>
+        <span class="char-name read-only">Xinyan</span>
+        <input class="edit-only name-input" type="text" value="Xinyan" oninput="update(21,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(21,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(21,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(21,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(21,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(21,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(21)" title="Delete">×</button>
+      </td></tr><tr data-index="22">
+      <td>
+        <span class="char-name read-only">Diona</span>
+        <input class="edit-only name-input" type="text" value="Diona" oninput="update(22,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(22,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C4</span>
+        <input class="edit-only num-input" type="number" value="4" min="0" max="6" oninput="update(22,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(22,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(22,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(22,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(22)" title="Delete">×</button>
+      </td></tr><tr data-index="23">
+      <td>
+        <span class="char-name read-only">Zhongli</span>
+        <input class="edit-only name-input" type="text" value="Zhongli" oninput="update(23,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(23,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(23,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(23,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(23,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(23,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(23)" title="Delete">×</button>
+      </td></tr><tr data-index="24">
+      <td>
+        <span class="char-name read-only">Xiao</span>
+        <input class="edit-only name-input" type="text" value="Xiao" oninput="update(24,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(24,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(24,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(24,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(24,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(24,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(24)" title="Delete">×</button>
+      </td></tr><tr data-index="25">
+      <td>
+        <span class="char-name read-only">Rosaria</span>
+        <input class="edit-only name-input" type="text" value="Rosaria" oninput="update(25,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(25,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(25,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(25,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(25,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(25,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(25)" title="Delete">×</button>
+      </td></tr><tr data-index="26">
+      <td>
+        <span class="char-name read-only">Yanfei</span>
+        <input class="edit-only name-input" type="text" value="Yanfei" oninput="update(26,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(26,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(26,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(26,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(26,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(26,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(26)" title="Delete">×</button>
+      </td></tr><tr data-index="27">
+      <td>
+        <span class="char-name read-only">Kazuha</span>
+        <input class="edit-only name-input" type="text" value="Kazuha" oninput="update(27,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(27,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(27,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(27,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(27,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(27,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(27)" title="Delete">×</button>
+      </td></tr><tr data-index="28">
+      <td>
+        <span class="char-name read-only">Aloy</span>
+        <input class="edit-only name-input" type="text" value="Aloy" oninput="update(28,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(28,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(28,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(28,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(28,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(28,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(28)" title="Delete">×</button>
+      </td></tr><tr data-index="29">
+      <td>
+        <span class="char-name read-only">Gorou</span>
+        <input class="edit-only name-input" type="text" value="Gorou" oninput="update(29,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(29,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(29,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(29,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(29,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(29,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(29)" title="Delete">×</button>
+      </td></tr><tr data-index="30">
+      <td>
+        <span class="char-name read-only">Kujou Sara</span>
+        <input class="edit-only name-input" type="text" value="Kujou Sara" oninput="update(30,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(30,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(30,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(30,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(30,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(30,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(30)" title="Delete">×</button>
+      </td></tr><tr data-index="31">
+      <td>
+        <span class="char-name read-only">Raiden Shogun</span>
+        <input class="edit-only name-input" type="text" value="Raiden Shogun" oninput="update(31,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(31,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(31,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(31,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(31,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(31,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(31)" title="Delete">×</button>
+      </td></tr><tr data-index="32">
+      <td>
+        <span class="char-name read-only">Sayu</span>
+        <input class="edit-only name-input" type="text" value="Sayu" oninput="update(32,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(32,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(32,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(32,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(32,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(32,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(32)" title="Delete">×</button>
+      </td></tr><tr data-index="33">
+      <td>
+        <span class="char-name read-only">Thoma</span>
+        <input class="edit-only name-input" type="text" value="Thoma" oninput="update(33,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(33,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C3</span>
+        <input class="edit-only num-input" type="number" value="3" min="0" max="6" oninput="update(33,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(33,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(33,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(33,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(33)" title="Delete">×</button>
+      </td></tr><tr data-index="34">
+      <td>
+        <span class="char-name read-only">Yun Jin</span>
+        <input class="edit-only name-input" type="text" value="Yun Jin" oninput="update(34,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(34,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C3</span>
+        <input class="edit-only num-input" type="number" value="3" min="0" max="6" oninput="update(34,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(34,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(34,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(34,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(34)" title="Delete">×</button>
+      </td></tr><tr data-index="35">
+      <td>
+        <span class="char-name read-only">Yelan</span>
+        <input class="edit-only name-input" type="text" value="Yelan" oninput="update(35,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(35,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(35,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(35,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(35,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(35,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(35)" title="Delete">×</button>
+      </td></tr><tr data-index="36">
+      <td>
+        <span class="char-name read-only">Kuki Shinobu</span>
+        <input class="edit-only name-input" type="text" value="Kuki Shinobu" oninput="update(36,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(36,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(36,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(36,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(36,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(36,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(36)" title="Delete">×</button>
+      </td></tr><tr data-index="37">
+      <td>
+        <span class="char-name read-only">Heizou</span>
+        <input class="edit-only name-input" type="text" value="Heizou" oninput="update(37,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(37,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(37,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(37,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(37,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(37,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(37)" title="Delete">×</button>
+      </td></tr><tr data-index="38">
+      <td>
+        <span class="char-name read-only">Collei</span>
+        <input class="edit-only name-input" type="text" value="Collei" oninput="update(38,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(38,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C5</span>
+        <input class="edit-only num-input" type="number" value="5" min="0" max="6" oninput="update(38,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(38,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(38,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(38,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(38)" title="Delete">×</button>
+      </td></tr><tr data-index="39">
+      <td>
+        <span class="char-name read-only">Tighnari</span>
+        <input class="edit-only name-input" type="text" value="Tighnari" oninput="update(39,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(39,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(39,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(39,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(39,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(39,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(39)" title="Delete">×</button>
+      </td></tr><tr data-index="40">
+      <td>
+        <span class="char-name read-only">Dori</span>
+        <input class="edit-only name-input" type="text" value="Dori" oninput="update(40,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(40,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(40,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(40,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(40,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(40,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(40)" title="Delete">×</button>
+      </td></tr><tr data-index="41">
+      <td>
+        <span class="char-name read-only">Candace</span>
+        <input class="edit-only name-input" type="text" value="Candace" oninput="update(41,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(41,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(41,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(41,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(41,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(41,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(41)" title="Delete">×</button>
+      </td></tr><tr data-index="42">
+      <td>
+        <span class="char-name read-only">Nahida</span>
+        <input class="edit-only name-input" type="text" value="Nahida" oninput="update(42,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(42,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(42,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(42,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(42,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(42,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(42)" title="Delete">×</button>
+      </td></tr><tr data-index="43">
+      <td>
+        <span class="char-name read-only">Layla</span>
+        <input class="edit-only name-input" type="text" value="Layla" oninput="update(43,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(43,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(43,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(43,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(43,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(43,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(43)" title="Delete">×</button>
+      </td></tr><tr data-index="44">
+      <td>
+        <span class="char-name read-only">Faruzan</span>
+        <input class="edit-only name-input" type="text" value="Faruzan" oninput="update(44,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(44,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(44,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(44,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(44,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(44,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(44)" title="Delete">×</button>
+      </td></tr><tr data-index="45">
+      <td>
+        <span class="char-name read-only">Yaoyao</span>
+        <input class="edit-only name-input" type="text" value="Yaoyao" oninput="update(45,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(45,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(45,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(45,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(45,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(45,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(45)" title="Delete">×</button>
+      </td></tr><tr data-index="46">
+      <td>
+        <span class="char-name read-only">Dehya</span>
+        <input class="edit-only name-input" type="text" value="Dehya" oninput="update(46,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(46,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(46,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(46,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(46,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(46,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(46)" title="Delete">×</button>
+      </td></tr><tr data-index="47">
+      <td>
+        <span class="char-name read-only">Mika</span>
+        <input class="edit-only name-input" type="text" value="Mika" oninput="update(47,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(47,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(47,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(47,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(47,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(47,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(47)" title="Delete">×</button>
+      </td></tr><tr data-index="48">
+      <td>
+        <span class="char-name read-only">Kaveh</span>
+        <input class="edit-only name-input" type="text" value="Kaveh" oninput="update(48,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(48,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(48,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(48,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(48,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(48,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(48)" title="Delete">×</button>
+      </td></tr><tr data-index="49">
+      <td>
+        <span class="char-name read-only">Kirara</span>
+        <input class="edit-only name-input" type="text" value="Kirara" oninput="update(49,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>72</strong></span>
+        <input class="edit-only num-input" type="number" value="72" min="1" max="90" oninput="update(49,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(49,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(49,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(49,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(49,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(49)" title="Delete">×</button>
+      </td></tr><tr data-index="50">
+      <td>
+        <span class="char-name read-only">Lynette</span>
+        <input class="edit-only name-input" type="text" value="Lynette" oninput="update(50,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(50,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(50,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(50,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(50,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(50,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(50)" title="Delete">×</button>
+      </td></tr><tr data-index="51">
+      <td>
+        <span class="char-name read-only">Freminet</span>
+        <input class="edit-only name-input" type="text" value="Freminet" oninput="update(51,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(51,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(51,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(51,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(51,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(51,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(51)" title="Delete">×</button>
+      </td></tr><tr data-index="52">
+      <td>
+        <span class="char-name read-only">Neuvillette</span>
+        <input class="edit-only name-input" type="text" value="Neuvillette" oninput="update(52,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(52,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(52,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(52,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(52,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(52,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(52)" title="Delete">×</button>
+      </td></tr><tr data-index="53">
+      <td>
+        <span class="char-name read-only">Charlotte</span>
+        <input class="edit-only name-input" type="text" value="Charlotte" oninput="update(53,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(53,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(53,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(53,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(53,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(53,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(53)" title="Delete">×</button>
+      </td></tr><tr data-index="54">
+      <td>
+        <span class="char-name read-only">Furina</span>
+        <input class="edit-only name-input" type="text" value="Furina" oninput="update(54,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(54,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(54,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(54,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(54,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(54,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(54)" title="Delete">×</button>
+      </td></tr><tr data-index="55">
+      <td>
+        <span class="char-name read-only">Navia</span>
+        <input class="edit-only name-input" type="text" value="Navia" oninput="update(55,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(55,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(55,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(55,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(55,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(55,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(55)" title="Delete">×</button>
+      </td></tr><tr data-index="56">
+      <td>
+        <span class="char-name read-only">Chevreuse</span>
+        <input class="edit-only name-input" type="text" value="Chevreuse" oninput="update(56,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(56,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(56,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(56,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(56,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(56,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(56)" title="Delete">×</button>
+      </td></tr><tr data-index="57">
+      <td>
+        <span class="char-name read-only">Gaming</span>
+        <input class="edit-only name-input" type="text" value="Gaming" oninput="update(57,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(57,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(57,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(57,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(57,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(57,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(57)" title="Delete">×</button>
+      </td></tr><tr data-index="58">
+      <td>
+        <span class="char-name read-only">Xianyun</span>
+        <input class="edit-only name-input" type="text" value="Xianyun" oninput="update(58,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(58,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(58,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(58,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(58,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(58,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(58)" title="Delete">×</button>
+      </td></tr><tr data-index="59">
+      <td>
+        <span class="char-name read-only">Sethos</span>
+        <input class="edit-only name-input" type="text" value="Sethos" oninput="update(59,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(59,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(59,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(59,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(59,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(59,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(59)" title="Delete">×</button>
+      </td></tr><tr data-index="60">
+      <td>
+        <span class="char-name read-only">Kachina</span>
+        <input class="edit-only name-input" type="text" value="Kachina" oninput="update(60,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(60,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C4</span>
+        <input class="edit-only num-input" type="number" value="4" min="0" max="6" oninput="update(60,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(60,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(60,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(60,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(60)" title="Delete">×</button>
+      </td></tr><tr data-index="61">
+      <td>
+        <span class="char-name read-only">Chasca</span>
+        <input class="edit-only name-input" type="text" value="Chasca" oninput="update(61,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(61,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(61,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(61,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(61,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(61,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(61)" title="Delete">×</button>
+      </td></tr><tr data-index="62">
+      <td>
+        <span class="char-name read-only">Ororon</span>
+        <input class="edit-only name-input" type="text" value="Ororon" oninput="update(62,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(62,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(62,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(62,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(62,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">8</span>
+        <input class="edit-only num-input" type="number" value="8" min="1" max="13" oninput="update(62,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(62)" title="Delete">×</button>
+      </td></tr><tr data-index="63">
+      <td>
+        <span class="char-name read-only">Mavuika</span>
+        <input class="edit-only name-input" type="text" value="Mavuika" oninput="update(63,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(63,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(63,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(63,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(63,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(63,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(63)" title="Delete">×</button>
+      </td></tr><tr data-index="64">
+      <td>
+        <span class="char-name read-only">Lan Yan</span>
+        <input class="edit-only name-input" type="text" value="Lan Yan" oninput="update(64,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(64,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C3</span>
+        <input class="edit-only num-input" type="number" value="3" min="0" max="6" oninput="update(64,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(64,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(64,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(64,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(64)" title="Delete">×</button>
+      </td></tr><tr data-index="65">
+      <td>
+        <span class="char-name read-only">Iansan</span>
+        <input class="edit-only name-input" type="text" value="Iansan" oninput="update(65,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>81</strong></span>
+        <input class="edit-only num-input" type="number" value="81" min="1" max="90" oninput="update(65,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(65,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(65,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(65,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(65,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(65)" title="Delete">×</button>
+      </td></tr><tr data-index="66">
+      <td>
+        <span class="char-name read-only">Ifa</span>
+        <input class="edit-only name-input" type="text" value="Ifa" oninput="update(66,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(66,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C3</span>
+        <input class="edit-only num-input" type="number" value="3" min="0" max="6" oninput="update(66,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(66,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(66,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(66,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(66)" title="Delete">×</button>
+      </td></tr><tr data-index="67">
+      <td>
+        <span class="char-name read-only">Dahlia</span>
+        <input class="edit-only name-input" type="text" value="Dahlia" oninput="update(67,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>51</strong></span>
+        <input class="edit-only num-input" type="number" value="51" min="1" max="90" oninput="update(67,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(67,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(67,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(67,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(67,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(67)" title="Delete">×</button>
+      </td></tr><tr data-index="68">
+      <td>
+        <span class="char-name read-only">Skirk</span>
+        <input class="edit-only name-input" type="text" value="Skirk" oninput="update(68,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(68,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(68,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(68,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(68,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">9</span>
+        <input class="edit-only num-input" type="number" value="9" min="1" max="13" oninput="update(68,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(68)" title="Delete">×</button>
+      </td></tr><tr data-index="69">
+      <td>
+        <span class="char-name read-only">Aino</span>
+        <input class="edit-only name-input" type="text" value="Aino" oninput="update(69,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(69,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge c6 read-only">C6</span>
+        <input class="edit-only num-input" type="number" value="6" min="0" max="6" oninput="update(69,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(69,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(69,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(69,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(69)" title="Delete">×</button>
+      </td></tr><tr data-index="70">
+      <td>
+        <span class="char-name read-only">Lauma</span>
+        <input class="edit-only name-input" type="text" value="Lauma" oninput="update(70,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(70,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(70,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(70,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(70,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(70,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(70)" title="Delete">×</button>
+      </td></tr><tr data-index="71">
+      <td>
+        <span class="char-name read-only">Nefer</span>
+        <input class="edit-only name-input" type="text" value="Nefer" oninput="update(71,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(71,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(71,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(71,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(71,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(71,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(71)" title="Delete">×</button>
+      </td></tr><tr data-index="72">
+      <td>
+        <span class="char-name read-only">Jahoda</span>
+        <input class="edit-only name-input" type="text" value="Jahoda" oninput="update(72,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(72,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C1</span>
+        <input class="edit-only num-input" type="number" value="1" min="0" max="6" oninput="update(72,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(72,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(72,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">4</span>
+        <input class="edit-only num-input" type="number" value="4" min="1" max="13" oninput="update(72,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(72)" title="Delete">×</button>
+      </td></tr><tr data-index="73">
+      <td>
+        <span class="char-name read-only">Columbina</span>
+        <input class="edit-only name-input" type="text" value="Columbina" oninput="update(73,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>90</strong></span>
+        <input class="edit-only num-input" type="number" value="90" min="1" max="90" oninput="update(73,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C0</span>
+        <input class="edit-only num-input" type="number" value="0" min="0" max="6" oninput="update(73,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">6</span>
+        <input class="edit-only num-input" type="number" value="6" min="1" max="13" oninput="update(73,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(73,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip maxed read-only">10</span>
+        <input class="edit-only num-input" type="number" value="10" min="1" max="13" oninput="update(73,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(73)" title="Delete">×</button>
+      </td></tr><tr data-index="74">
+      <td>
+        <span class="char-name read-only">Illuga</span>
+        <input class="edit-only name-input" type="text" value="Illuga" oninput="update(74,'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>71</strong></span>
+        <input class="edit-only num-input" type="number" value="71" min="1" max="90" oninput="update(74,'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge read-only">C2</span>
+        <input class="edit-only num-input" type="number" value="2" min="0" max="6" oninput="update(74,'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(74,'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(74,'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip read-only">3</span>
+        <input class="edit-only num-input" type="number" value="3" min="1" max="13" oninput="update(74,'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(74)" title="Delete">×</button>
+      </td></tr><tr id="add-row">
+    <td><input class="name-input" type="text" id="new-name" placeholder="New character…"></td>
+    <td class="center"><input class="num-input" type="number" id="new-level" value="1" min="1" max="90"></td>
+    <td class="center"><input class="num-input" type="number" id="new-const" value="0" min="0" max="6"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t1" value="1" min="1" max="13"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t2" value="1" min="1" max="13"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t3" value="1" min="1" max="13"></td>
+    <td class="center">
+      <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="addChar()">Add</button>
+    </td></tr></tbody>
+    </table>
+  </div>
+
+  <div id="save-bar">
+    <span id="save-msg">Download the updated file to make changes permanent.</span>
+    <button class="btn btn-danger" onclick="cancelEdit()">✕ Cancel</button>
+    <button class="btn btn-primary" onclick="downloadFile()">⬇ Download Updated File</button>
+  </div>
+</main>
+
+<footer>
+  <p>Open in any browser · Edit Mode to update · Download to save</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA  —  edit this section to seed the file
+// ═══════════════════════════════════════════
+const SEED = [
+  {
+    "name": "Traveler",
+    "level": 90,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Keqing",
+    "level": 82,
+    "const": 2,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Qiqi",
+    "level": 71,
+    "const": 5,
+    "t1": 4,
+    "t2": 4,
+    "t3": 4
+  },
+  {
+    "name": "Chongyun",
+    "level": 71,
+    "const": 4,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Xingqiu",
+    "level": 90,
+    "const": 6,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Xiangling",
+    "level": 90,
+    "const": 6,
+    "t1": 6,
+    "t2": 9,
+    "t3": 10
+  },
+  {
+    "name": "Ningguang",
+    "level": 81,
+    "const": 5,
+    "t1": 8,
+    "t2": 8,
+    "t3": 8
+  },
+  {
+    "name": "Beidou",
+    "level": 71,
+    "const": 3,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Mona",
+    "level": 81,
+    "const": 1,
+    "t1": 6,
+    "t2": 6,
+    "t3": 8
+  },
+  {
+    "name": "Sucrose",
+    "level": 81,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Fischl",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Noelle",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Bennett",
+    "level": 90,
+    "const": 6,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Venti",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 6,
+    "t3": 10
+  },
+  {
+    "name": "Razor",
+    "level": 71,
+    "const": 1,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Diluc",
+    "level": 90,
+    "const": 6,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Barbara",
+    "level": 81,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Kaeya",
+    "level": 71,
+    "const": 2,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Lisa",
+    "level": 71,
+    "const": 5,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Amber",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Jean",
+    "level": 81,
+    "const": 1,
+    "t1": 6,
+    "t2": 7,
+    "t3": 8
+  },
+  {
+    "name": "Xinyan",
+    "level": 51,
+    "const": 0,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Diona",
+    "level": 71,
+    "const": 4,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Zhongli",
+    "level": 90,
+    "const": 0,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Xiao",
+    "level": 90,
+    "const": 1,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Rosaria",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Yanfei",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Kazuha",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 9,
+    "t3": 9
+  },
+  {
+    "name": "Aloy",
+    "level": 51,
+    "const": 0,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Gorou",
+    "level": 51,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Kujou Sara",
+    "level": 71,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Raiden Shogun",
+    "level": 90,
+    "const": 2,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Sayu",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Thoma",
+    "level": 51,
+    "const": 3,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Yun Jin",
+    "level": 51,
+    "const": 3,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Yelan",
+    "level": 90,
+    "const": 2,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Kuki Shinobu",
+    "level": 90,
+    "const": 6,
+    "t1": 6,
+    "t2": 10,
+    "t3": 9
+  },
+  {
+    "name": "Heizou",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Collei",
+    "level": 81,
+    "const": 5,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Tighnari",
+    "level": 81,
+    "const": 1,
+    "t1": 9,
+    "t2": 8,
+    "t3": 9
+  },
+  {
+    "name": "Dori",
+    "level": 51,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Candace",
+    "level": 51,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Nahida",
+    "level": 90,
+    "const": 2,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Layla",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Faruzan",
+    "level": 81,
+    "const": 6,
+    "t1": 6,
+    "t2": 8,
+    "t3": 8
+  },
+  {
+    "name": "Yaoyao",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Dehya",
+    "level": 81,
+    "const": 0,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Mika",
+    "level": 51,
+    "const": 0,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Kaveh",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Kirara",
+    "level": 72,
+    "const": 0,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Lynette",
+    "level": 51,
+    "const": 0,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Freminet",
+    "level": 51,
+    "const": 2,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Neuvillette",
+    "level": 90,
+    "const": 1,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Charlotte",
+    "level": 71,
+    "const": 6,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Furina",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Navia",
+    "level": 90,
+    "const": 0,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Chevreuse",
+    "level": 71,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Gaming",
+    "level": 90,
+    "const": 6,
+    "t1": 9,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Xianyun",
+    "level": 90,
+    "const": 0,
+    "t1": 9,
+    "t2": 9,
+    "t3": 10
+  },
+  {
+    "name": "Sethos",
+    "level": 51,
+    "const": 2,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Kachina",
+    "level": 71,
+    "const": 4,
+    "t1": 6,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Chasca",
+    "level": 90,
+    "const": 1,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Ororon",
+    "level": 71,
+    "const": 2,
+    "t1": 6,
+    "t2": 8,
+    "t3": 8
+  },
+  {
+    "name": "Mavuika",
+    "level": 90,
+    "const": 0,
+    "t1": 10,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Lan Yan",
+    "level": 71,
+    "const": 3,
+    "t1": 3,
+    "t2": 6,
+    "t3": 6
+  },
+  {
+    "name": "Iansan",
+    "level": 81,
+    "const": 0,
+    "t1": 6,
+    "t2": 6,
+    "t3": 9
+  },
+  {
+    "name": "Ifa",
+    "level": 51,
+    "const": 3,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Dahlia",
+    "level": 51,
+    "const": 1,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Skirk",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 9,
+    "t3": 9
+  },
+  {
+    "name": "Aino",
+    "level": 71,
+    "const": 6,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  },
+  {
+    "name": "Lauma",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Nefer",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Jahoda",
+    "level": 71,
+    "const": 1,
+    "t1": 4,
+    "t2": 4,
+    "t3": 4
+  },
+  {
+    "name": "Columbina",
+    "level": 90,
+    "const": 0,
+    "t1": 6,
+    "t2": 10,
+    "t3": 10
+  },
+  {
+    "name": "Illuga",
+    "level": 71,
+    "const": 2,
+    "t1": 3,
+    "t2": 3,
+    "t3": 3
+  }
+];
+// ═══════════════════════════════════════════
+
+let characters = JSON.parse(JSON.stringify(SEED));
+let editSnapshot = null;
+
+function render() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  characters.forEach((c, i) => {
+    const tr = document.createElement('tr');
+    tr.dataset.index = i;
+    const maxed = v => v >= 10 ? ' maxed' : '';
+    tr.innerHTML = `
+      <td>
+        <span class="char-name read-only">${esc(c.name)}</span>
+        <input class="edit-only name-input" type="text" value="${esc(c.name)}"
+          oninput="update(${i},'name',this.value)" placeholder="Name">
+      </td>
+      <td class="center">
+        <span class="level-val read-only"><strong>${c.level}</strong></span>
+        <input class="edit-only num-input" type="number" value="${c.level}"
+          min="1" max="90" oninput="update(${i},'level',+this.value)">
+      </td>
+      <td class="center">
+        <span class="const-badge${c.const===6?' c6':''} read-only">C${c.const}</span>
+        <input class="edit-only num-input" type="number" value="${c.const}"
+          min="0" max="6" oninput="update(${i},'const',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip${maxed(c.t1)} read-only">${c.t1}</span>
+        <input class="edit-only num-input" type="number" value="${c.t1}"
+          min="1" max="13" oninput="update(${i},'t1',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip${maxed(c.t2)} read-only">${c.t2}</span>
+        <input class="edit-only num-input" type="number" value="${c.t2}"
+          min="1" max="13" oninput="update(${i},'t2',+this.value)">
+      </td>
+      <td class="center">
+        <span class="t-pip${maxed(c.t3)} read-only">${c.t3}</span>
+        <input class="edit-only num-input" type="number" value="${c.t3}"
+          min="1" max="13" oninput="update(${i},'t3',+this.value)">
+      </td>
+      <td class="edit-only center">
+        <button class="del-btn" onclick="deleteChar(${i})" title="Delete">×</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Add-character row
+  const addRow = document.createElement('tr');
+  addRow.id = 'add-row';
+  addRow.innerHTML = `
+    <td><input class="name-input" type="text" id="new-name" placeholder="New character…"></td>
+    <td class="center"><input class="num-input" type="number" id="new-level" value="1" min="1" max="90"></td>
+    <td class="center"><input class="num-input" type="number" id="new-const" value="0" min="0" max="6"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t1" value="1" min="1" max="13"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t2" value="1" min="1" max="13"></td>
+    <td class="center"><input class="num-input" type="number" id="new-t3" value="1" min="1" max="13"></td>
+    <td class="center">
+      <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="addChar()">Add</button>
+    </td>`;
+  tbody.appendChild(addRow);
+
+  document.getElementById('char-count').textContent =
+    `${characters.length} character${characters.length !== 1 ? 's' : ''}`;
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function update(i, field, val) {
+  characters[i][field] = val;
+  // Re-render badges/pips without full redraw
+  render();
+}
+
+function deleteChar(i) {
+  if (!confirm(`Remove ${characters[i].name}?`)) return;
+  characters.splice(i, 1);
+  render();
+}
+
+function addChar() {
+  const name = document.getElementById('new-name').value.trim();
+  if (!name) { document.getElementById('new-name').focus(); return; }
+  characters.push({
+    name,
+    level: +document.getElementById('new-level').value || 1,
+    const: +document.getElementById('new-const').value || 0,
+    t1: +document.getElementById('new-t1').value || 1,
+    t2: +document.getElementById('new-t2').value || 1,
+    t3: +document.getElementById('new-t3').value || 1,
+  });
+  render();
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-name').focus();
+}
+
+function toggleEdit() {
+  if (document.body.classList.contains('editing')) {
+    cancelEdit();
+  } else {
+    editSnapshot = JSON.parse(JSON.stringify(characters));
+    document.body.classList.add('editing');
+    document.getElementById('edit-banner').classList.add('visible');
+    document.getElementById('toggle-edit-btn').textContent = '✕ Exit Edit';
+    document.getElementById('save-msg').textContent = 'Download the updated file to make changes permanent.';
+    render();
+  }
+}
+
+function cancelEdit() {
+  if (editSnapshot) {
+    characters = editSnapshot;
+    editSnapshot = null;
+  }
+  document.body.classList.remove('editing');
+  document.getElementById('edit-banner').classList.remove('visible');
+  document.getElementById('toggle-edit-btn').textContent = '✎ Edit Mode';
+  render();
+}
+
+function downloadFile() {
+  const seedJSON = JSON.stringify(characters, null, 2);
+  const src = document.documentElement.outerHTML;
+  // Replace the SEED block with updated data
+  const updated = src.replace(
+    /const SEED = \[[\s\S]*?\];/,
+    `const SEED = ${seedJSON};`
+  );
+  const blob = new Blob([updated], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'genshin_tracker.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  document.getElementById('save-msg').textContent = '✓ Downloaded! Replace your old file with this one.';
+  // Exit edit mode with saved data
+  editSnapshot = null;
+  document.body.classList.remove('editing');
+  document.getElementById('edit-banner').classList.remove('visible');
+  document.getElementById('toggle-edit-btn').textContent = '✎ Edit Mode';
+  render();
+}
+
+render();
+</script>
+
+
+</body></html>
