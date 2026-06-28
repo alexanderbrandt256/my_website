@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Mia's Page ✨</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      color: var(--card-text);
+      background: var(--bg);
+      background-attachment: fixed;
+      transition: background 0.6s ease;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---------- Themes (chosen at random on each visit) ---------- */
+    body.theme-rainbow {
+      --bg: linear-gradient(160deg, #ffe3ec 0%, #fff5d6 30%, #d6f5e3 60%, #d9e8ff 100%);
+      --title: #c2348b;
+      --greeting: #5a3a8a;
+      --accent: #ff6fae;
+      --tag-bg: #fff0f7;
+      --tag-text: #c2348b;
+    }
+    body.theme-forest {
+      --bg: linear-gradient(160deg, #e7f6e1 0%, #d6efe0 45%, #e6def7 100%);
+      --title: #2f7d4f;
+      --greeting: #5a3a8a;
+      --accent: #4caf73;
+      --tag-bg: #eafaf0;
+      --tag-text: #2f7d4f;
+    }
+    body.theme-sea {
+      --bg: linear-gradient(160deg, #d4f3f4 0%, #c7eef0 40%, #ffe3d6 100%);
+      --title: #0d7a86;
+      --greeting: #c2562f;
+      --accent: #18a0ad;
+      --tag-bg: #e3f8f9;
+      --tag-text: #0d7a86;
+    }
+    body.theme-space {
+      --bg: linear-gradient(170deg, #1b1b3a 0%, #2b2b6b 50%, #3a2a66 100%);
+      --title: #ffe27a;
+      --greeting: #bfe0ff;
+      --accent: #7c5cff;
+      --tag-bg: rgba(255,255,255,0.14);
+      --tag-text: #ffe27a;
+    }
+
+    /* shared card text colors stay dark for readability on white cards */
+    body { --card-bg: #ffffff; --card-text: #2b2b3a; --card-desc: #5c5c6e; }
+
+    /* ---------- Floating background decorations ---------- */
+    #decor { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .float {
+      position: absolute;
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
+      opacity: 0.55;
+      animation: bob var(--dur, 6s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      will-change: transform;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(-6deg); }
+      50%      { transform: translateY(-22px) rotate(6deg); }
+    }
+
+    /* ---------- Layout ---------- */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: clamp(24px, 6vw, 56px) clamp(16px, 5vw, 32px) 64px;
+    }
+
+    header { text-align: center; margin-bottom: clamp(24px, 5vw, 44px); }
+
+    h1 {
+      font-size: clamp(2.6rem, 11vw, 5rem);
+      margin: 0;
+      color: var(--title);
+      line-height: 1.05;
+      text-shadow: 0 3px 0 rgba(255,255,255,0.6);
+      letter-spacing: 1px;
+    }
+    .greeting {
+      font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+      color: var(--greeting);
+      margin: 14px 0 0;
+      font-weight: bold;
+    }
+
+    /* ---------- Cards grid ---------- */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(16px, 4vw, 24px);
+    }
+    @media (min-width: 620px) {
+      .cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 4vw, 22px);
+      background: var(--card-bg);
+      color: var(--card-text);
+      text-decoration: none;
+      border-radius: 28px;
+      padding: clamp(20px, 5vw, 28px);
+      min-height: 128px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+      border: 4px solid transparent;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .card:hover, .card:focus-visible {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+      border-color: var(--accent);
+      outline: none;
+    }
+    .card:active { transform: scale(0.97); }
+
+    .card .emoji {
+      font-size: clamp(2.8rem, 11vw, 4rem);
+      flex-shrink: 0;
+      width: clamp(64px, 18vw, 88px);
+      height: clamp(64px, 18vw, 88px);
+      display: grid;
+      place-items: center;
+      background: var(--tag-bg);
+      border-radius: 22px;
+    }
+    .card .body { min-width: 0; }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: clamp(1.4rem, 5.5vw, 1.8rem);
+      color: var(--card-text);
+      line-height: 1.1;
+    }
+    .card p {
+      margin: 0;
+      font-size: clamp(1rem, 3.8vw, 1.15rem);
+      color: var(--card-desc);
+      line-height: 1.35;
+    }
+
+    /* ---------- Theme button + grown-up link ---------- */
+    .footer-actions {
+      margin-top: clamp(28px, 6vw, 44px);
+      text-align: center;
+    }
+    #shuffle-theme {
+      font-family: inherit;
+      font-size: clamp(1.1rem, 4vw, 1.35rem);
+      font-weight: bold;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 999px;
+      padding: 16px 30px;
+      min-height: 56px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+    #shuffle-theme:hover { filter: brightness(1.06); }
+    #shuffle-theme:active { transform: scale(0.95); }
+
+    .grownups {
+      display: block;
+      margin-top: 22px;
+      font-size: 0.95rem;
+      color: var(--greeting);
+      opacity: 0.8;
+      text-decoration: none;
+    }
+    .grownups:hover { text-decoration: underline; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .float { animation: none; }
+      .card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="decor" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <header>
+      <h1>Mia's Page</h1>
+      <p class="greeting">Hi Mia! 🎉 Pick something fun to play!</p>
+    </header>
+
+    <div class="cards">
+      <a class="card" href="typing_game.html">
+        <span class="emoji">🦉</span>
+        <span class="body">
+          <h2>Typing Adventure</h2>
+          <p>Race the owl and become a super-fast typer!</p>
+        </span>
+      </a>
+
+      <a class="card" href="enchanted_forest.html">
+        <span class="emoji">🌳</span>
+        <span class="body">
+          <h2>The Enchanted Forest</h2>
+          <p>Explore a magical forest full of surprises.</p>
+        </span>
+      </a>
+
+      <a class="card" href="color_palette_generator.html">
+        <span class="emoji">🎨</span>
+        <span class="body">
+          <h2>Color Palette Maker</h2>
+          <p>Mix colors and make pretty rainbows.</p>
+        </span>
+      </a>
+
+      <a class="card" href="laser_lens/index.html">
+        <span class="emoji">💎</span>
+        <span class="body">
+          <h2>Laser Lens</h2>
+          <p>Bend the light to glow up the crystals!</p>
+        </span>
+      </a>
+    </div>
+
+    <div class="footer-actions">
+      <button id="shuffle-theme" type="button">🎲 New look!</button>
+      <a class="grownups" href="../index.html">For grown-ups →</a>
+    </div>
+  </main>
+
+  <script>
+    const THEMES = {
+      'theme-rainbow': ['🌈', '🦊', '🐱', '🦉', '⭐', '🍭', '🎈', '🐰'],
+      'theme-forest':  ['🌳', '🍄', '🦌', '🦋', '✨', '🌿', '🐿️', '🌼'],
+      'theme-sea':     ['🐙', '🐠', '🐡', '🫧', '🐚', '⭐', '🦀', '🐬'],
+      'theme-space':   ['🚀', '🪐', '⭐', '🌙', '👽', '☄️', '✨', '🛸'],
+    };
+    const NAMES = Object.keys(THEMES);
+
+    function scatterDecor(themeName) {
+      const decor = document.getElementById('decor');
+      decor.innerHTML = '';
+      const emojis = THEMES[themeName];
+      const count = window.innerWidth < 620 ? 7 : 12;
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement('span');
+        span.className = 'float';
+        span.textContent = emojis[i % emojis.length];
+        span.style.left = Math.random() * 92 + 'vw';
+        span.style.top = Math.random() * 92 + 'vh';
+        span.style.setProperty('--dur', (4 + Math.random() * 5).toFixed(1) + 's');
+        span.style.setProperty('--delay', (Math.random() * 4).toFixed(1) + 's');
+        decor.appendChild(span);
+      }
+    }
+
+    function applyTheme(themeName) {
+      NAMES.forEach(n => document.body.classList.remove(n));
+      document.body.classList.add(themeName);
+      scatterDecor(themeName);
+    }
+
+    // Random theme on every visit.
+    let currentTheme = NAMES[Math.floor(Math.random() * NAMES.length)];
+    applyTheme(currentTheme);
+
+    // "New look!" picks a different theme than the current one.
+    document.getElementById('shuffle-theme').addEventListener('click', () => {
+      const others = NAMES.filter(n => n !== currentTheme);
+      currentTheme = others[Math.floor(Math.random() * others.length)];
+      applyTheme(currentTheme);
+    });
+  </script>
+</body>
+</html>

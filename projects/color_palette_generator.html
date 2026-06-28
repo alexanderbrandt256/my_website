@@ -1,5 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Palette Generator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+  <style>
+    /* Design tokens the widget expects (originally supplied by its host). */
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', Menlo, monospace;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --color-text-primary: #1f2330;
+      --color-text-secondary: #6b7180;
+      --color-border-primary: #b8bdca;
+      --color-border-secondary: #d7dbe3;
+      --color-border-tertiary: #e7eaf0;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f1f3f7;
+    }
+    html, body {
+      margin: 0;
+      background: #f8f9fb;
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+    }
+    .page { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+    .page-head { text-align: center; margin-bottom: 8px; }
+    .page-head h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 0 0 4px; }
+    .page-head p { margin: 0; color: var(--color-text-secondary); font-size: 1rem; }
+    .card {
+      background: var(--color-background-primary);
+      border: 1px solid var(--color-border-tertiary);
+      border-radius: 18px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+      margin-top: 16px;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    /* Slightly larger touch/readability tweaks. */
+    .pg-tab { font-size: 14px !important; padding: 9px 16px !important; }
+    .pg-swatch .hex-label { font-size: 11px !important; }
+    .pg-color-dot { width: 42px !important; height: 42px !important; }
 
-<style>
   #pg-wrap { padding: 1rem; position: relative; min-height: 540px; font-family: var(--font-sans); }
   #pg-tabs::-webkit-scrollbar { display: none; }
   .pg-tab { white-space: nowrap; font-size: 12px; padding: 6px 13px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: none; color: var(--color-text-secondary); cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -17,6 +63,15 @@
   #pg-shuffle:hover { background: var(--color-background-secondary); }
   #pg-copy-base { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); padding: 4px 6px; line-height: 1; }
 </style>
+</head>
+<body>
+<div class="page">
+  <div class="page-head">
+    <h1>🎨 Color Palette Generator</h1>
+    <p>Pick a color and discover matching color families. Tap a swatch to copy it!</p>
+  </div>
+
+  <div class="card">
 
 <h2 class="sr-only">Color palette generator — pick a base color to explore 5-color harmonies</h2>
 
@@ -46,6 +101,9 @@
   <div id="pg-hex-row" style="display: flex; gap: 3px; margin-bottom: 1.5rem;"></div>
 
   <div id="pg-toast"></div>
+</div>
+
+  </div>
 </div>
 
 <script>
@@ -201,3 +259,5 @@
   renderSwatches();
 })();
 </script>
+</body>
+</html>

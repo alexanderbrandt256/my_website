@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laser Lens</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="menu" hidden>
+        <h1 class="menu-logo">Laser&nbsp;<span>Lens</span></h1>
+        <p class="menu-tagline">Bend light, light the crystals.</p>
+        <div id="menu-packs"></div>
+        <p class="menu-foot">Drag mirrors from the tray · click to rotate · Fire to shoot</p>
+      </section>
+
+      <header id="titlebar">
+        <div class="title-left">
+          <span id="round-label">ROUND 1</span>
+        </div>
+        <h1 class="title-logo">Laser&nbsp;<span>Lens</span></h1>
+        <div class="title-right">
+          <span class="score-label">SCORE</span>
+          <span id="score-value">0</span>
+        </div>
+      </header>
+
+      <main id="stage">
+        <canvas id="field"></canvas>
+        <div id="overlay"></div>
+      </main>
+
+      <footer id="hud">
+        <section id="inventory" aria-label="Mirror inventory"></section>
+        <div id="hint"></div>
+        <div id="controls">
+          <button id="btn-menu" class="btn btn-ghost" type="button">☰ Menu</button>
+          <button id="btn-reset" class="btn btn-ghost" type="button">Reset</button>
+          <button id="btn-fire" class="btn btn-fire" type="button">Fire!</button>
+          <button id="btn-next" class="btn btn-next" type="button" hidden>Next ▶</button>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
